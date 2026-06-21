@@ -65,22 +65,32 @@ class FacebookGraphService
     {
         $reels = [];
 
-        // Get page access token (fallback to user token if no page token)
-        $pageToken = $this->getPageAccessToken($account, $pageId) ?? $account->access_token;
+        // Use user access token directly to access any public page
+        $token = $account->access_token;
 
         // Try endpoint 1: /reels (newest API for Reels)
         $response = Http::get("{$this->baseUrl}/{$pageId}/reels", [
-            'access_token' => $pageToken,
+            'access_token' => $token,
             'fields' => 'id,description,source,thumbnail_url,permalink_url,creation_time,length,from',
             'limit' => min($limit, 100),
         ]);
 
-        // If reels endpoint fails, fallback to /videos
+        // If reels endpoint fails or empty, fallback to /videos
         if (!$response->successful() || empty($response->json()['data'] ?? [])) {
             Log::info('Reels endpoint failed, trying /videos fallback', ['page_id' => $pageId]);
             $response = Http::get("{$this->baseUrl}/{$pageId}/videos", [
-                'access_token' => $pageToken,
+                'access_token' => $token,
                 'fields' => 'id,description,source,picture,permalink_url,created_time,length,from',
+                'limit' => min($limit, 100),
+            ]);
+        }
+
+        // If still fails, try /posts with video filter
+        if (!$response->successful() || empty($response->json()['data'] ?? [])) {
+            Log::info('Videos endpoint failed, trying /posts fallback', ['page_id' => $pageId]);
+            $response = Http::get("{$this->baseUrl}/{$pageId}/posts", [
+                'access_token' => $token,
+                'fields' => 'id,message,attachments{media,type,url},created_time,from',
                 'limit' => min($limit, 100),
             ]);
         }
@@ -89,7 +99,7 @@ class FacebookGraphService
             $data = $response->json()['data'] ?? [];
 
             foreach ($data as $reel) {
-                $desc = $reel['description'] ?? '';
+                $desc = $reel['description'] ?? $reel['message'] ?? '';
 
                 // Jika ada keyword filter, skip yg tidak match
                 if ($keyword && !str_contains(strtolower($desc), strtolower($keyword))) {
@@ -100,14 +110,29 @@ class FacebookGraphService
                 $authorName = $from['name'] ?? null;
                 $videoId = $reel['id'];
 
+                // Handle posts format (has attachments)
+                $sourceUrl = $reel['source'] ?? null;
+                $thumbnailUrl = $reel['thumbnail_url'] ?? $reel['picture'] ?? null;
+                $permalink = $reel['permalink_url'] ?? null;
+
+                if (isset($reel['attachments']['data'])) {
+                    foreach ($reel['attachments']['data'] as $att) {
+                        if (in_array($att['type'] ?? '', ['video_inline', 'video'])) {
+                            $sourceUrl = $att['media']['source'] ?? $sourceUrl;
+                            $thumbnailUrl = $att['media']['image']['src'] ?? $thumbnailUrl;
+                            $permalink = $att['url'] ?? $permalink;
+                        }
+                    }
+                }
+
                 $reels[] = [
                     'facebook_video_id' => $videoId,
-                    'source_url'        => $reel['source'] ?? null,
-                    'thumbnail_url'     => $reel['thumbnail_url'] ?? $reel['picture'] ?? "https://graph.facebook.com/{$videoId}/picture",
+                    'source_url'        => $sourceUrl,
+                    'thumbnail_url'     => $thumbnailUrl ?? "https://graph.facebook.com/{$videoId}/picture",
                     'title'             => $desc ?: 'Untitled Reel',
                     'author_name'       => $authorName,
                     'description'       => substr($desc, 0, 500),
-                    'permalink'         => $reel['permalink_url'] ?? null,
+                    'permalink'         => $permalink,
                     'duration'          => $reel['length'] ?? null,
                     'created_at_reel'   => $reel['created_time'] ?? $reel['creation_time'] ?? null,
                 ];
@@ -122,7 +147,7 @@ class FacebookGraphService
         }
 
         if (empty($reels)) {
-            throw new \Exception("Halaman ini tidak memiliki video publik atau ID Halaman tidak valid. Pastikan Page ID benar dan halaman memiliki video.");
+            throw new \Exception("Tidak ada video publik ditemukan. Pastikan ID Halaman adalah Fanspage publik yang memiliki video (bukan profil pribadi).");
         }
 
         return $reels;
