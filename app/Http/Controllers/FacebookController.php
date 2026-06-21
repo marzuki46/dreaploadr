@@ -33,8 +33,7 @@ class FacebookController extends Controller
             if ($user) {
                 // Update token
                 $user->update([
-                    'facebook_token' => $facebookUser->token,
-                    'facebook_refresh_token' => $facebookUser->refreshToken,
+                    'facebook_access_token' => $facebookUser->token,
                 ]);
             } else {
                 // Check if user already logged in
@@ -42,32 +41,29 @@ class FacebookController extends Controller
                     $user = Auth::user();
                     $user->update([
                         'facebook_id' => $facebookUser->id,
-                        'facebook_token' => $facebookUser->token,
-                        'facebook_refresh_token' => $facebookUser->refreshToken,
+                        'facebook_access_token' => $facebookUser->token,
                     ]);
                 } else {
                     // Check if email exists
                     $existingUser = User::where('email', $facebookUser->email)->first();
-                    if ($existingUser) {
+                    if ($existingUser && $facebookUser->email) {
                         $existingUser->update([
                             'facebook_id' => $facebookUser->id,
-                            'facebook_token' => $facebookUser->token,
-                            'facebook_refresh_token' => $facebookUser->refreshToken,
+                            'facebook_access_token' => $facebookUser->token,
                         ]);
                         Auth::login($existingUser);
-                        return redirect()->intended('/dashboard');
+                        $user = $existingUser;
+                    } else {
+                        // Create new user
+                        $user = User::create([
+                            'name' => $facebookUser->name ?? $facebookUser->nickname ?? 'Facebook User',
+                            'email' => $facebookUser->email ?? ($facebookUser->id . '@facebook.com'),
+                            'password' => bcrypt(Str::random(16)),
+                            'facebook_id' => $facebookUser->id,
+                            'facebook_access_token' => $facebookUser->token,
+                            'role' => 'user',
+                        ]);
                     }
-
-                    // Create new user
-                    $user = User::create([
-                        'name' => $facebookUser->name ?? $facebookUser->nickname ?? 'Facebook User',
-                        'email' => $facebookUser->email,
-                        'password' => bcrypt(Str::random(16)),
-                        'facebook_id' => $facebookUser->id,
-                        'facebook_token' => $facebookUser->token,
-                        'facebook_refresh_token' => $facebookUser->refreshToken,
-                        'role' => 'user',
-                    ]);
                 }
             }
 
