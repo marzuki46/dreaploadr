@@ -104,10 +104,16 @@ class FacebookGraphService
                 ];
             }
         } else {
+            $error = $response->json();
             Log::error('Facebook scrape reels failed', [
-                'error' => $response->json(),
+                'error' => $error,
                 'page_id' => $pageId,
             ]);
+            throw new \Exception("Gagal mengambil video dari API Facebook. Pesan: " . ($error['error']['message'] ?? 'Unknown Error'));
+        }
+
+        if (empty($reels)) {
+            throw new \Exception("Halaman ini tidak memiliki video Reels publik atau ID Halaman salah.");
         }
 
         return $reels;

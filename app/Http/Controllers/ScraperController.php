@@ -71,10 +71,13 @@ class ScraperController extends Controller
             abort(403);
         }
 
-        // Dispatch to queue
-        ScrapeReelsJob::dispatch($account, $data['page_id'], null, $data['limit'] ?? 50);
-
-        return redirect()->back()->with('success', 'Scraping job has been queued. Reels will be processed in the background.');
+        try {
+            // Dispatch to queue
+            ScrapeReelsJob::dispatchSync($account, $data['page_id'], null, $data['limit'] ?? 50);
+            return redirect()->back()->with('success', 'Berhasil menyedot video Reels!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
+        }
     }
 
     /**
