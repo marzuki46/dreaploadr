@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('scheduled_posts', function (Blueprint $table) {
-            $table->string('facebook_page_id')->after('facebook_account_id')->nullable();
-            $table->dateTime('published_at')->after('status')->nullable();
+            $table->string('facebook_page_id')->nullable();
+            $table->dateTime('published_at')->nullable();
         });
     }
 
