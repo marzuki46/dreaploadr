@@ -16,6 +16,7 @@ class FacebookController extends Controller
     public function redirectToFacebook()
     {
         return Socialite::driver('facebook')
+            ->redirectUrl(url('/auth/facebook/callback'))
             ->scopes(['pages_show_list', 'pages_read_engagement', 'pages_manage_posts', 'instagram_basic', 'instagram_content_publish'])
             ->redirect();
     }
@@ -26,7 +27,9 @@ class FacebookController extends Controller
     public function handleFacebookCallback()
     {
         try {
-            $facebookUser = Socialite::driver('facebook')->user();
+            $facebookUser = Socialite::driver('facebook')
+                ->redirectUrl(url('/auth/facebook/callback'))
+                ->user();
 
             $user = User::where('facebook_id', $facebookUser->id)->first();
 
