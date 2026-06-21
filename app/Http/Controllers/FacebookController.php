@@ -83,7 +83,7 @@ class FacebookController extends Controller
             return redirect()->intended('/dashboard');
 
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors(['facebook' => 'Facebook authentication failed: ' . $e->getMessage()]);
+            dd('ERROR FACEBOOK DATABASE: ' . $e->getMessage() . ' di baris ' . $e->getLine());
         }
     }
 
