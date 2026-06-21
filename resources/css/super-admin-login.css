@@ -1,0 +1,110 @@
+/* Super Admin Login Custom Styles */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-height: 100vh;
+}
+
+.fi-simple-layout {
+    background: transparent !important;
+}
+
+.fi-simple-layout .fi-simple-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 2.5rem !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-simple-card-heading {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    text-align: center !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-simple-card-subheading {
+    color: #6b7280 !important;
+    text-align: center !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-input-wrp {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-input-wrp input {
+    border-radius: 10px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    border: 2px solid #e5e7eb !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-input-wrp input:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-btn[type="submit"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 10px !important;
+    padding: 0.75rem !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-btn[type="submit"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-btn[type="submit"]:active {
+    transform: translateY(0) !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-label label {
+    font-weight: 600 !important;
+    font-size: 0.8125rem !important;
+    color: #374151 !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-checkbox-input {
+    border-radius: 6px !important;
+    border: 2px solid #d1d5db !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-checkbox-input:checked {
+    background-color: #667eea !important;
+    border-color: #667eea !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-link {
+    color: #667eea !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+}
+
+.fi-simple-layout .fi-simple-card .fi-link:hover {
+    color: #764ba2 !important;
+    text-decoration: underline !important;
+}
+
+.fi-simple-layout .fi-simple-header {
+    display: flex !important;
+    justify-content: center !important;
+    margin-bottom: 1rem !important;
+}
+
+.fi-simple-layout .fi-simple-header img {
+    max-height: 50px !important;
+    border-radius: 12px !important;
+}
