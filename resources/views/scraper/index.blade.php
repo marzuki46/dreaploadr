@@ -6,6 +6,18 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Scraper Dashboard</h1>
 
+    @if(session('success'))
+        <div class="mb-4 bg-green-50 text-green-700 p-4 rounded-xl border border-green-200">
+            <p class="font-semibold">{{ session('success') }}</p>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-4 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200">
+            <p class="font-semibold">{{ session('error') }}</p>
+        </div>
+    @endif
+
     {{-- Tab Navigation --}}
     <div class="mb-8 border-b border-gray-200" x-data="{ activeTab: 'scrape' }">
         <nav class="flex gap-6 -mb-px">
